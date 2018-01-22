@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Spotify Charts</title>
+
+        <meta property="og:title" content="Spotify Charts">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.spotifycharts.com/">
+        <meta property="og:description" content="">
+
+        <meta name="description" content="Spotify Charts">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="touch-icon-144.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="touch-icon-114.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="touch-icon-72.png">
+        <link rel="apple-touch-icon-precomposed" href="touch-icon-57.png">
+        <link rel="stylesheet" type="text/css" href="/css/app.css">
+        <script>
+            window.log = function () {
+                log.history = log.history || [];
+                log.history.push(arguments);
+                if (this.console) {
+                    console.log(Array.prototype.slice.call(arguments))
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 9]>
+          <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="content">
+            <div>
+                <header class="header">
+                    <div class="container">
+                        <h1 class="header-logo"><a href="/">Spotify</a></h1>
+                        <h2 class="header-title">Charts</h2>
+                    </div>
+                </header>
+            </div>
+            <div class="wrapper" data-reactid=".0.1"><div class="container" data-reactid=".0.1.0"><div class="not-found" data-reactid=".0.1.0.0"><h1 data-reactid=".0.1.0.0.0">Page not found</h1><h2 data-reactid=".0.1.0.0.1">Please check the URL and try again.</h2></div></div></div>
+        </div>
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', 'UA-31793-90', 'auto');
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-2.1.4.min.js"><\/script>')</script>
+        <script src="/js/main.min.js"></script>
+        
+    </body>
+</html>
