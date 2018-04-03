@@ -1,20 +1,7 @@
 import pandas as pd #Dataframe, Series
 import numpy as np
 
-from sklearn import tree
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
-
-from matplotlib import pyplot as plt
-import seaborn as sns
-
-import graphviz
-import pydotplus
 import io
-
-from scipy import misc
-
-from sklearn.metrics import accuracy_score
 
 import spotipy
 import spotipy.util as util
@@ -121,7 +108,7 @@ def playSongAndJumpAtBranches(branches, songID, analysis):
 def run():
     songID = "3m9eTtBtU0xxJndQRz9MOr"
     analysis = getAnalysisForTrack(songID)
-    print("Gor Analysis for song with id: "+songID)
+    print("Got Analysis for song with id: "+songID)
     G = makeGraphFromAnalysis(analysis)
     print("Found Close Pairs of Beats")
     branches = makeBranchesToJumpAt(G)
