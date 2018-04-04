@@ -2,6 +2,7 @@ import pandas as pd #Dataframe, Series
 import numpy as np
 
 import io
+import sys, getopt
 
 import spotipy
 import spotipy.util as util
@@ -32,6 +33,36 @@ if token:
     sp = spotipy.Spotify(auth=token)
 else:
     print("Can't get token for", username)
+
+def query_yes_no(question, default="yes"):
+    """Ask a yes/no question via raw_input() and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes" (the default), "no" or None (meaning
+        an answer is required of the user).
+
+    The "answer" return value is True for "yes" or False for "no".
+    """
+    valid = {"yes": True, "y": True, "ye": True,
+             "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = input().lower()
+        if choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")
 
 def euc_distance(s1, s2):
     return np.linalg.norm(s1-s2)
@@ -112,6 +143,45 @@ def playSongAndJumpAtBranches(branches, songID, analysis):
             print("Made jump number "+str(i)+ " out of "+str(len(branches)))
             i=i+1
 
+def main(argv):
+	songName = ''
+	songID = ''
+	try:
+		opts, args = getopt.getopt(argv,"hs:",["song="])
+	except getopt.GetoptError:
+		print ("songExtender.py -s '<songName>'")
+		print ("songExtender.py --song '<songName>'")
+		sys.exit(2)
+	if len(argv) < 2:
+		print ("songExtender.py -s '<songName>'")
+		print ("songExtender.py --song '<songName>'")
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print ("songExtender.py -s '<songName>'")
+			sys.exit()
+		elif opt in ("-s", "--song"):
+			songName = arg
+	print ('Song Name is '+ songName)
+	
+	songResults = sp.search(q='track:' + songName, type='track')
+	
+	for song in songResults["tracks"]["items"]:
+		result = query_yes_no("Did you want to extend the song " + song['name'] + " by " + song["artists"][0]["name"])
+		
+		if str(result) =="True":
+			songID = song['id']
+			break
+			
+	if songID == '':
+		#prompt the user to add an artist tag to help us narrow down the search catagory or get the id directly from spotify.
+	
+	print(songID)
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
+
+
 #Run Function
 def run():
     songID = "3m9eTtBtU0xxJndQRz9MOr"
@@ -125,4 +195,4 @@ def run():
     playSongAndJumpAtBranches(branches, songID, analysis)
 
     
-run()
+#run()
