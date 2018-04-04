@@ -10,6 +10,14 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import random
 import networkx as nx
 
+import os
+
+
+os.environ['SPOTIPY_CLIENT_ID'] = "0cadd882a6ab4ff485c80b8b02aa3b0c"
+os.environ['SPOTIPY_CLIENT_SECRET'] = "04d0f737e18a4a92abee1da25d70766b"
+os.environ['SPOTIPY_REDIRECT_URI'] = "http://localhost:8888"
+
+
 cid ="0cadd882a6ab4ff485c80b8b02aa3b0c" 
 secret = "04d0f737e18a4a92abee1da25d70766b"
 username = ""
