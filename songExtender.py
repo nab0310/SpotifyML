@@ -190,15 +190,33 @@ def playSongAndJumpAtBranches(branches, songID, analysis, G):
     sp._put("me/player/play", payload = {"uris":["spotify:track:"+songID], "offset": {"position": 0}})
     sp._put("me/player/repeat?state=track")
     print("We have found " + str(len(branches)) +" branches for your pleasure!")
+    print("Here they are: ")
+    for branch in newlist:
+        print("From " + str(analysis["segments"][branch["from"]]["start"]) + " to " + str(analysis["segments"][branch["to"]]["start"]))
     while True:
         while i < len(branches):
             player = sp._get("me/player")
             if player["progress_ms"] >= analysis["segments"][newlist[i]["from"]]["start"]*1000:
                 jump_to = analysis["segments"][newlist[i]["to"]]["start"]*1000
-                sp._put("me/player/seek?position_ms="+str(int(round(jump_to))))
-                print("Made jump number "+str(i)+ " out of "+str(len(branches)))
-                print("From " + str(analysis["segments"][newlist[i]["from"]]["start"]) + " to " + str(analysis["segments"][newlist[i]["to"]]["start"]))
-                i=i+1
+                origin_sec = analysis["segments"][newlist[i]["from"]]["start"]
+                dest_sec = analysis["segments"][newlist[i]["to"]]["start"]
+                sp._put("me/player/seek?position_ms="+str(int(round(dest_sec * 1000))))
+                print("Made jump number "+str(i)+ " out of "+str(len(newlist)))
+                print("From " + str(origin_sec) + " to " + str(dest_sec))
+                #Remove the branch we jumped from
+                del newlist[i]
+                #Find next jump point
+                #For forward jumps.....
+                if origin_sec < dest_sec:
+                    i =  i + 1
+                    while analysis["segments"][newlist[i]["from"]]["start"] < dest_sec and i > 0:
+                        i = i + 1
+                #if we are jumping backwards, we need to iterate backwards through the array and find the 
+                #place where this segment fits in.
+                else:
+                    while analysis["segments"][newlist[i]["to"]]["start"] > dest_sec:
+                        i -= 1
+                #i=i+1
         branches = makeBranchesToJumpAt(G)
         i = 0
 
