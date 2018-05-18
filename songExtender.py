@@ -187,6 +187,10 @@ def makeBranchesToJumpAt(G):
 def playSongAndJumpAtBranches(branches, songID, analysis, G):
     i=0
     newlist = sorted(branches, key=lambda k: k['from']) 
+    player = sp._get("me/player")
+    if player == None:
+        print("Spotify instance unable to be found. Please open spotify on your device or play a track to get started.")
+        exit(1)
     sp._put("me/player/play", payload = {"uris":["spotify:track:"+songID], "offset": {"position": 0}})
     sp._put("me/player/repeat?state=track")
     print("We have found " + str(len(branches)) +" branches for your pleasure!")
@@ -194,7 +198,7 @@ def playSongAndJumpAtBranches(branches, songID, analysis, G):
     for branch in newlist:
         print("From " + str(analysis["segments"][branch["from"]]["start"]) + " to " + str(analysis["segments"][branch["to"]]["start"]))
     while True:
-        while i < len(branches):
+        while int(len(newlist)) > 0:
             player = sp._get("me/player")
             if player["progress_ms"] >= analysis["segments"][newlist[i]["from"]]["start"]*1000:
                 jump_to = analysis["segments"][newlist[i]["to"]]["start"]*1000
@@ -208,16 +212,23 @@ def playSongAndJumpAtBranches(branches, songID, analysis, G):
                 #Find next jump point
                 #For forward jumps.....
                 if origin_sec < dest_sec:
-                    i =  i + 1
-                    while analysis["segments"][newlist[i]["from"]]["start"] < dest_sec and i > 0:
+                    #i =  i + 1
+                    while  i < len(newlist) - 1 and analysis["segments"][newlist[i]["from"]]["start"] < dest_sec:
                         i = i + 1
                 #if we are jumping backwards, we need to iterate backwards through the array and find the 
                 #place where this segment fits in.
                 else:
-                    while analysis["segments"][newlist[i]["to"]]["start"] > dest_sec:
+                    #i = i - 1
+                    if i == len(newlist):
+                        i = i -1
+                    while i > 0 and analysis["segments"][newlist[i]["to"]]["start"] > dest_sec:
                         i -= 1
                 #i=i+1
+                if i == len(newlist):
+                    i = len(newlist) - 1
+        print("Making new branches.")
         branches = makeBranchesToJumpAt(G)
+        newlist = sorted(branches, key=lambda k: k['from']) 
         i = 0
 
 def main(argv):
