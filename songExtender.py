@@ -12,17 +12,18 @@ import networkx as nx
 
 import os
 
+import config
+
+NUMBER_OF_JUMPS = 30
+
 def handle_spotify_login():
-	os.environ['SPOTIPY_CLIENT_ID'] = "0cadd882a6ab4ff485c80b8b02aa3b0c"
-	os.environ['SPOTIPY_CLIENT_SECRET'] = "04d0f737e18a4a92abee1da25d70766b"
+	os.environ['SPOTIPY_CLIENT_ID'] = config.client_id
+	os.environ['SPOTIPY_CLIENT_SECRET'] = config.client_secret
 	os.environ['SPOTIPY_REDIRECT_URI'] = "http://localhost:8888"
+	
+	username =''
 
-
-	cid ="0cadd882a6ab4ff485c80b8b02aa3b0c" 
-	secret = "04d0f737e18a4a92abee1da25d70766b"
-	username = ""
-
-	client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret) 
+	client_credentials_manager = SpotifyClientCredentials(client_id=config.client_id, client_secret=config.client_secret) 
 	sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 	scope = 'user-library-read playlist-read-private user-read-recently-played user-read-playback-state user-modify-playback-state'
@@ -119,8 +120,9 @@ def computeAverageSegments(analysis, numberOfSegmentsToAvg):
             currentSegs.append(analysis["segments"][i+j])
         #compute the average segment of those
         avgSegment = averageSegments(currentSegs)
+        #Initialize vars to compute the closest segment of those averaged
         distanceFromAvg = sys.maxsize
-        closestSegmentNumber = sys.maxsize
+        closestSegmentNumber = 0
         #For the segments, find the closest one to the average one, so we know where to jump
         for j in range(0, numberOfSegmentsToAvg):
             if calucate_distance(currentSegs[j], avgSegment) < distanceFromAvg:
@@ -134,7 +136,7 @@ def get_closest_segments_avg(segment_number, avgSegments, analysis, numOfSegment
         if segmentObj["closestSegment"] != segment_number:
             distance = calucate_distance(analysis["segments"][segment_number], segmentObj["avgSegment"])
             timeBetween = analysis["segments"][segment_number]["start"] - analysis["segments"][segmentObj["closestSegment"]]["start"]
-            if(distance < 50 and distance != 0 and timeBetween > 5):
+            if(distance < 80 and distance != 0 and timeBetween > 5):
                 segment_distance.append({"distance": distance, "number": segmentObj["closestSegment"]})
     return sorted(segment_distance, key=lambda x: x["distance"], reverse=False)[0:numOfSegmentsToGet]
     
@@ -150,13 +152,17 @@ def makeGraphFromAverageSegments(avgSegments, analysis):
             if reverseSegmentObject not in segmentsToAddToGraph:
                 segmentsToAddToGraph.append(segmentObject)
     sortedSegments = sorted(segmentsToAddToGraph, key=lambda x: x["distance"], reverse=False)
-    for segment in sortedSegments:
-        to.append(segment["to"])
-        fromArray.append(segment["from"])
+    randomSortedSegments = random.sample(sortedSegments, NUMBER_OF_JUMPS) 
+    wholeFromNumbers = []
+    for segment in randomSortedSegments:
+        #We want to prevent many jumps in the same second, so add from to a dict and see if the 
+        #int value is in the map..... we have to convert from segment numbers to time values
+        if int(analysis["segments"][segment["from"]]["start"]) not in wholeFromNumbers:
+            wholeFromNumbers.append(int(analysis["segments"][segment["from"]]["start"]))
+            to.append(segment["to"])
+            fromArray.append(segment["from"])
     print("Length of From Array: " + str(len(fromArray)))
     print("Length of To Array: " + str(len(to)))
-    #fromArray = fromArray[0:20]
-    #to = to[0:20]
     df = pd.DataFrame({'from':fromArray, 'to':to })
     G = nx.from_pandas_edgelist(df, "from", "to")
     return G
