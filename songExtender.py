@@ -136,7 +136,7 @@ def get_closest_segments_avg(segment_number, avgSegments, analysis, numOfSegment
         if segmentObj["closestSegment"] != segment_number:
             distance = calucate_distance(analysis["segments"][segment_number], segmentObj["avgSegment"])
             timeBetween = analysis["segments"][segment_number]["start"] - analysis["segments"][segmentObj["closestSegment"]]["start"]
-            if(distance < 80 and distance != 0 and timeBetween > 5):
+            if(distance < 60 and distance != 0 and timeBetween > 5):
                 segment_distance.append({"distance": distance, "number": segmentObj["closestSegment"]})
     return sorted(segment_distance, key=lambda x: x["distance"], reverse=False)[0:numOfSegmentsToGet]
     
@@ -145,7 +145,7 @@ def makeGraphFromAverageSegments(avgSegments, analysis):
     segmentsToAddToGraph = []
     fromArray = []
     for i in range(0, len(analysis["segments"])):
-        closestSegments = get_closest_segments_avg(i, avgSegments, analysis, 6)
+        closestSegments = get_closest_segments_avg(i, avgSegments, analysis, 4)
         for segment in closestSegments:
             segmentObject = {"from": i, "to": segment["number"], "distance": segment["distance"]}
             reverseSegmentObject = {"from": segment["number"], "to": i, "distance": segment["distance"]}
@@ -248,14 +248,14 @@ def main(argv):
 		print ("songExtender.py --song '<songName>'")
 		print ("songExtender.py -a '<artistName>'")
 		print ("songExtender.py --artist '<artistName>'")
-		print ("songExtender.py -u '<artistName>'")
+		print ("songExtender.py -u '<songURI>'")
 		sys.exit(2)
 	if len(argv) < 2:
 		print ("songExtender.py -s '<songName>'")
 		print ("songExtender.py --song '<songName>'")
 		print ("songExtender.py -a '<artistName>'")
 		print ("songExtender.py --artist '<artistName>'")
-		print ("songExtender.py -u '<artistName>'")
+		print ("songExtender.py -u '<songURI>'")
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
@@ -275,7 +275,7 @@ def main(argv):
 		print ("songExtender.py --song '<songName>'")
 		print ("songExtender.py -a '<artistName>'")
 		print ("songExtender.py --artist '<aritstName>'")
-		print ("songExtender.py -u '<artistName>'")
+		print ("songExtender.py -u '<songURI>'")
 		sys.exit()
 		
 	if songID == '':
